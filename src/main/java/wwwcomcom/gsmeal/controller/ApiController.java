@@ -5,21 +5,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import wwwcomcom.gsmeal.domain.DailyMeal;
 import wwwcomcom.gsmeal.dto.ResultDTO;
 import wwwcomcom.gsmeal.service.ApiService;
 
-@Controller
+@RestController
 public class ApiController {
 
     @Autowired
     ApiService apiService;
 
     @GetMapping("/api")
-    public ResultDTO<DailyMeal> getMeal(@RequestParam String date){
+    public DailyMeal getMeal(@RequestParam String date){
         DailyMeal mealData = apiService.getMeal(date);
-        int resultCode = mealData.getMeals().isEmpty() ? 0 : 1;
-        return ResultDTO.of(resultCode,mealData);
+        return mealData;
     }
 
 }
