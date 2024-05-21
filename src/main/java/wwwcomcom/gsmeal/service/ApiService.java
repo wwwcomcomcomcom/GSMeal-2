@@ -41,6 +41,7 @@ public class ApiService {
         return fetchMealData(date);
     }
     private DailyMeal fetchMealData(String date) {
+        int dateAsNum = Integer.parseInt(date);
         String url = String.format("https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=F10&SD_SCHUL_CODE=7380292&MLSV_YMD=%s&Type=json&KEY=%s",date,apiKey);
         System.out.println(url);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -62,12 +63,12 @@ public class ApiService {
             }
 
             return DailyMeal.builder()
-                    .day(Integer.parseInt(date))
+                    .day(dateAsNum)
                     .meals(meals)
                     .build();
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        return DailyMeal.emptyMeal(1);
+        return DailyMeal.emptyMeal(dateAsNum);
     }
 }
