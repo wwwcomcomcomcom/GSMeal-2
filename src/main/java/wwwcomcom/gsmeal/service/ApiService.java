@@ -1,29 +1,16 @@
 package wwwcomcom.gsmeal.service;
 
-import lombok.Builder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import wwwcomcom.gsmeal.domain.DailyMeal;
 import wwwcomcom.gsmeal.domain.Meal;
-
 import java.util.ArrayList;
-import java.util.Optional;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Service
 public class ApiService {
@@ -45,7 +32,7 @@ public class ApiService {
         String url = String.format("https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=F10&SD_SCHUL_CODE=7380292&MLSV_YMD=%s&Type=json&KEY=%s",date,apiKey);
         System.out.println(url);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        JSONObject rawApiResponse = null;
+        JSONObject rawApiResponse;
         try {
             rawApiResponse = (JSONObject) jsonParser.parse(response.getBody());
         } catch (ParseException e) {
@@ -57,7 +44,7 @@ public class ApiService {
             JSONArray jsonMeals = (JSONArray)((JSONObject)res.get(1)).get("row");
             if(jsonMeals == null) throw new NullPointerException();
 
-            ArrayList<Meal> meals = new ArrayList<Meal>();
+            ArrayList<Meal> meals = new ArrayList<>();
             for (Object jsonMeal : jsonMeals) {
                 meals.add(Meal.fromJson((JSONObject) jsonMeal));
             }
@@ -67,7 +54,7 @@ public class ApiService {
                     .meals(meals)
                     .build();
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            System.out.println("No meal data for " + date);
         }
         return DailyMeal.emptyMeal(dateAsNum);
     }
